@@ -3,12 +3,20 @@ import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../contexts/AuthProvider';
+import useToken from '../../hooks/useToken';
 
 const SignUp = () => {
     const { register, formState: { errors }, handleSubmit } = useForm();
     const { createUser, updateUser } = useContext(AuthContext)
-    const [signupError, setSignupError] = useState('')
-    const navigate = useNavigate()
+    const [signupError, setSignupError] = useState('');
+    const [createdUserEmail, setCreatedUserEmail] = useState('');
+    const [token] = useToken(createdUserEmail);
+    const navigate = useNavigate();
+
+    if (token) {
+        navigate('/')
+    }
+
 
     const handleSignUp = data => {
         console.log(data)
@@ -23,7 +31,7 @@ const SignUp = () => {
                 }
                 updateUser(userInfo)
                     .then(() => {
-                        navigate('/')
+                        saveUser(data.name, data.email)
                     })
                     .catch(err => console.error(err))
             })
@@ -32,6 +40,33 @@ const SignUp = () => {
                 setSignupError(error.message)
             })
     }
+
+    const saveUser = (name, email) => {
+        const user = { name, email };
+        fetch('http://localhost:5000/users', {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(user)
+        })
+            .then(res => res.json())
+            .then(data => {
+                // getUserToken(email)
+                setCreatedUserEmail(email)
+            })
+    }
+
+    // const getUserToken = email => {
+    //     fetch(`http://localhost:5000/jwt?email=${email}`)
+    //         .then(res => res.json())
+    //         .then(data => {
+    //             if (data.accessToken) {
+    //                 localStorage.setItem('accessToken', data.accessToken)
+    //                 navigate('/')
+    //             }
+    //         })
+    // }
     return (
         <div className='h-[800px] flex justify-center items-center'>
             <div className='w-96 p-7'>
