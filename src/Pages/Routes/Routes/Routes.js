@@ -9,6 +9,8 @@ import ManageDoctors from "../../Dashboard/ManageDoctors/ManageDoctors";
 import MyAppointment from "../../Dashboard/MyAppointment/MyAppointment";
 import Home from "../../Home/Home/Home";
 import Login from "../../Login/Login";
+import Payment from "../../Payment/Payment";
+import DIsplayError from "../../Shared/DisplayError/DIsplayError";
 import SignUp from "../../SignUp/SignUp";
 import AdminRoutes from "../AdminRoutes/AdminRoutes";
 import PrivateRoutes from "../PrivateRoutes/PrivateRoutes";
@@ -18,6 +20,7 @@ export const router = createBrowserRouter([
     {
         path: '/',
         element: <Main></Main>,
+        errorElement: <DIsplayError></DIsplayError>,
         children: [
             {
                 path: '/',
@@ -40,6 +43,7 @@ export const router = createBrowserRouter([
     {
         path: '/dashboard',
         element: <PrivateRoutes><DashboardLayout></DashboardLayout></PrivateRoutes>,
+        errorElement: <DIsplayError></DIsplayError>,
         children: [
             {
                 path: '/dashboard',
@@ -56,6 +60,11 @@ export const router = createBrowserRouter([
             {
                 path: '/dashboard/managedoctors',
                 element: <AdminRoutes><ManageDoctors></ManageDoctors></AdminRoutes>
+            },
+            {
+                path: '/dashboard/payment/:id',
+                element: <AdminRoutes><Payment></Payment></AdminRoutes>,
+                loader: ({ params }) => fetch(`http://localhost:5000/bookings/${params.id}`)
             }
         ]
     }
